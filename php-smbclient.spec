@@ -10,17 +10,9 @@
 # Please, preserve the changelog entries
 #
 
-%{!?php_inidir:  %global php_inidir   %{_sysconfdir}/php.d}
-%{!?__pecl:      %global __pecl       %{_bindir}/pecl}
-%{!?__php:       %global __php        %{_bindir}/php}
-
 %global pecl_name  smbclient
 %global with_zts   0%{?__ztsphp:1}
-%if "%{php_version}" < "5.6"
-%global ini_name   %{pecl_name}.ini
-%else
 %global ini_name   40-%{pecl_name}.ini
-%endif
 # Test suite requires a Samba server and configuration file
 %global with_tests 0%{?_with_tests:1}
 
@@ -45,8 +37,6 @@ BuildRequires:  php-composer(phpunit/phpunit)
 BuildRequires:  samba
 %endif
 
-Requires(post): %{__pecl}
-Requires(postun): %{__pecl}
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
 
@@ -59,12 +49,6 @@ Provides:       php-pecl-%{pecl_name}          = %{version}-%{release}
 Provides:       php-pecl-%{pecl_name}%{?_isa}  = %{version}-%{release}
 Provides:       php-pecl(%{pecl_name})         = %{version}
 Provides:       php-pecl(%{pecl_name})%{?_isa} = %{version}
-
-%if 0%{?fedora} < 20 && 0%{?rhel} < 7
-# Filter private shared
-%{?filter_provides_in: %filter_provides_in %{_libdir}/.*\.so$}
-%{?filter_setup}
-%endif
 
 
 %description
@@ -79,7 +63,7 @@ mv %{pecl_name}-%{version}%{?prever} NTS
 
 # Don't install/register tests
 sed -e 's/role="test"/role="src"/' \
-    %{?_licensedir:-e '/LICENSE/s/role="doc"/role="src"/' } \
+    -e '/LICENSE/s/role="doc"/role="src"/' \
     -i package.xml
 
 cd NTS
@@ -160,18 +144,8 @@ cp %{SOURCE2} phpunit.xml
 %endif
 
 
-%post
-%{pecl_install} %{pecl_xmldir}/%{name}.xml >/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    %{pecl_uninstall} %{pecl_name} >/dev/null || :
-fi
-
-
 %files
-%{?_licensedir:%license NTS/LICENSE}
+%license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
 %{pecl_xmldir}/%{name}.xml
 
@@ -187,6 +161,8 @@ fi
 %changelog
 * Wed Mar  2 2016 Remi Collet <remi@fedoraproject.org> - 0.8.0-1
 - update to 0.8.0 (stable, no change)
+- drop scriptlets (replaced by file triggers in php-pear)
+- cleanup
 
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0.8.0-0.5.RC1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
