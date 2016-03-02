@@ -14,7 +14,6 @@
 %{!?__pecl:      %global __pecl       %{_bindir}/pecl}
 %{!?__php:       %global __php        %{_bindir}/php}
 
-%global prever     RC1
 %global pecl_name  smbclient
 %global with_zts   0%{?__ztsphp:1}
 %if "%{php_version}" < "5.6"
@@ -27,7 +26,7 @@
 
 Name:           php-smbclient
 Version:        0.8.0
-Release:        0.5.%{prever}%{?dist}
+Release:        1%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
 Group:          Development/Languages
@@ -79,7 +78,9 @@ to PHP programs.
 mv %{pecl_name}-%{version}%{?prever} NTS
 
 # Don't install/register tests
-sed -e 's/role="test"/role="src"/' -i package.xml
+sed -e 's/role="test"/role="src"/' \
+    %{?_licensedir:-e '/LICENSE/s/role="doc"/role="src"/' } \
+    -i package.xml
 
 cd NTS
 # Check extension version
@@ -184,6 +185,9 @@ fi
 
 
 %changelog
+* Wed Mar  2 2016 Remi Collet <remi@fedoraproject.org> - 0.8.0-1
+- update to 0.8.0 (stable, no change)
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0.8.0-0.5.RC1
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
