@@ -18,7 +18,7 @@
 
 Name:           php-smbclient
 Version:        0.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
 Group:          Development/Languages
@@ -159,6 +159,9 @@ cp %{SOURCE2} phpunit.xml
 
 
 %changelog
+* Mon Jun 27 2016 Remi Collet <remi@fedoraproject.org> - 0.8.0-2
+- rebuild for https://fedoraproject.org/wiki/Changes/php70
+
 * Wed Mar  2 2016 Remi Collet <remi@fedoraproject.org> - 0.8.0-1
 - update to 0.8.0 (stable, no change)
 - drop scriptlets (replaced by file triggers in php-pear)
