@@ -3,7 +3,7 @@
 #
 # remirepo spec file for php-smbclient
 #
-# Copyright (c) 2015 Remi Collet
+# Copyright (c) 2015-2017 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
@@ -17,8 +17,8 @@
 %global with_tests 0%{?_with_tests:1}
 
 Name:           php-smbclient
-Version:        0.8.0
-Release:        3%{?dist}
+Version:        0.9.0
+Release:        1%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
 Group:          Development/Languages
@@ -159,6 +159,9 @@ cp %{SOURCE2} phpunit.xml
 
 
 %changelog
+* Fri Feb 10 2017 Remi Collet <remi@fedoraproject.org> - 0.9.0-1
+- update to 0.9.0 (stable)
+
 * Mon Nov 14 2016 Remi Collet <remi@fedoraproject.org> - 0.8.0-3
 - rebuild for https://fedoraproject.org/wiki/Changes/php71
 
