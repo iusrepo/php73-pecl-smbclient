@@ -3,12 +3,15 @@
 #
 # remirepo spec file for php-smbclient
 #
-# Copyright (c) 2015-2017 Remi Collet
+# Copyright (c) 2015-2018 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
 # Please, preserve the changelog entries
 #
+
+# we don't want -z defs linker flag
+%undefine _strict_symbol_defs_build
 
 %global pecl_name  smbclient
 %global with_zts   0%{?__ztsphp:1}
@@ -18,7 +21,7 @@
 
 Name:           php-smbclient
 Version:        0.9.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
 Group:          Development/Languages
@@ -159,6 +162,9 @@ cp %{SOURCE2} phpunit.xml
 
 
 %changelog
+* Fri Jan 26 2018 Remi Collet <remi@remirepo.net> - 0.9.0-5
+- undefine _strict_symbol_defs_build
+
 * Tue Oct 03 2017 Remi Collet <remi@fedoraproject.org> - 0.9.0-4
 - rebuild for https://fedoraproject.org/wiki/Changes/php72
 
