@@ -20,8 +20,8 @@
 %global with_tests 0%{?_with_tests:1}
 
 Name:           php-smbclient
-Version:        0.9.0
-Release:        8%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
 Group:          Development/Languages
@@ -31,8 +31,6 @@ Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 %if %{with_tests}
 Source2:        %{pecl_name}-phpunit.xml
 %endif
-
-Patch0:         https://patch-diff.githubusercontent.com/raw/eduardok/libsmbclient-php/pull/60.patch
 
 BuildRequires:  php-devel
 BuildRequires:  php-pear
@@ -72,8 +70,6 @@ sed -e 's/role="test"/role="src"/' \
     -i package.xml
 
 cd NTS
-%patch0 -p1 -b .pr60
-
 # Check extension version
 ver=$(sed -n '/define PHP_SMBCLIENT_VERSION/{s/.* "//;s/".*$//;p}' php_smbclient.h)
 if test "$ver" != "%{version}%{?prever}"; then
@@ -166,6 +162,9 @@ cp %{SOURCE2} phpunit.xml
 
 
 %changelog
+* Wed Dec 26 2018 Remi Collet <remi@remirepo.net> - 1.0.0-1
+- update to 1.0.0
+
 * Thu Oct 11 2018 Remi Collet <remi@remirepo.net> - 0.9.0-8
 - Rebuild for https://fedoraproject.org/wiki/Changes/php73
 - add patch for PHP 7.3 from
