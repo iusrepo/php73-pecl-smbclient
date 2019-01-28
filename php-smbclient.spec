@@ -24,7 +24,6 @@ Version:        1.0.0
 Release:        1%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
-Group:          Development/Languages
 License:        BSD
 URL:            https://github.com/eduardok/libsmbclient-php
 Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
