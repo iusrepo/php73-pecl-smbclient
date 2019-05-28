@@ -1,3 +1,5 @@
+# IUS spec file for php73-pecl-smbclient, forked from:
+#
 # Fedora spec file for php-smbclient
 # with SCL compatibility removed, from
 #
@@ -18,21 +20,23 @@
 %global ini_name   40-%{pecl_name}.ini
 # Test suite requires a Samba server and configuration file
 %global with_tests 0%{?_with_tests:1}
+%global php        php73
 
-Name:           php-smbclient
+Name:           %{php}-pecl-smbclient
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        PHP wrapper for libsmbclient
 
 License:        BSD
 URL:            https://github.com/eduardok/libsmbclient-php
-Source0:        http://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
+Source0:        https://pecl.php.net/get/%{pecl_name}-%{version}%{?prever}.tgz
 %if %{with_tests}
 Source2:        %{pecl_name}-phpunit.xml
 %endif
 
-BuildRequires:  php-devel
-BuildRequires:  php-pear
+BuildRequires:  %{php}-devel
+# build require pear1's dependencies to avoid mismatched php stacks
+BuildRequires:  pear1 %{php}-cli %{php}-common %{php}-xml
 BuildRequires:  libsmbclient-devel > 3.6
 %if %{with_tests}
 BuildRequires:  php-composer(phpunit/phpunit)
@@ -43,7 +47,6 @@ Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
 
 # Renamed (and "php -m" reports both smbclient and libsmbclient)
-Obsoletes:      php-libsmbclient         < 0.8.0-0.2
 Provides:       php-libsmbclient         = %{version}-%{release}
 Provides:       php-libsmbclient%{?_isa} = %{version}-%{release}
 # PECL
@@ -51,6 +54,11 @@ Provides:       php-pecl-%{pecl_name}          = %{version}-%{release}
 Provides:       php-pecl-%{pecl_name}%{?_isa}  = %{version}-%{release}
 Provides:       php-pecl(%{pecl_name})         = %{version}
 Provides:       php-pecl(%{pecl_name})%{?_isa} = %{version}
+
+# safe replacement
+Provides:       php-%{pecl_name} = %{version}-%{release}
+Provides:       php-%{pecl_name}%{?_isa} = %{version}-%{release}
+Conflicts:      php-%{pecl_name} < %{version}-%{release}
 
 
 %description
@@ -92,13 +100,13 @@ cp -pr NTS ZTS
 cd NTS
 %{_bindir}/phpize
 %configure --with-php-config=%{_bindir}/php-config
-make %{?_smp_mflags}
+%make_build
 
 %if %{with_zts}
 cd ../ZTS
 %{_bindir}/zts-phpize
 %configure --with-php-config=%{_bindir}/zts-php-config
-make %{?_smp_mflags}
+%make_build
 %endif
 
 
@@ -109,7 +117,7 @@ make -C NTS install INSTALL_ROOT=%{buildroot}
 install -Dpm 644 %{ini_name} %{buildroot}%{php_inidir}/%{ini_name}
 
 # Install XML package description
-install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{name}.xml
+install -D -m 644 package.xml %{buildroot}%{pecl_xmldir}/%{pecl_name}.xml
 
 %if %{with_zts}
 make -C ZTS install INSTALL_ROOT=%{buildroot}
@@ -129,7 +137,7 @@ done
     --modules | grep %{pecl_name}
 
 %if %{with_zts}
-: Minimal load test for NTS extension
+: Minimal load test for ZTS extension
 %{__ztsphp} --no-php-ini \
     --define extension=%{buildroot}%{php_ztsextdir}/%{pecl_name}.so \
     --modules | grep %{pecl_name}
@@ -146,10 +154,28 @@ cp %{SOURCE2} phpunit.xml
 %endif
 
 
+%triggerin -- pear1
+if [ -x %{__pecl} ]; then
+    %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
+fi
+
+
+%posttrans
+if [ -x %{__pecl} ]; then
+    %{pecl_install} %{pecl_xmldir}/%{pecl_name}.xml >/dev/null || :
+fi
+
+
+%postun
+if [ $1 -eq 0 -a -x %{__pecl} ]; then
+    %{pecl_uninstall} %{pecl_name} >/dev/null || :
+fi
+
+
 %files
 %license NTS/LICENSE
 %doc %{pecl_docdir}/%{pecl_name}
-%{pecl_xmldir}/%{name}.xml
+%{pecl_xmldir}/%{pecl_name}.xml
 
 %config(noreplace) %{php_inidir}/%{ini_name}
 %{php_extdir}/%{pecl_name}.so
@@ -161,6 +187,9 @@ cp %{SOURCE2} phpunit.xml
 
 
 %changelog
+* Tue May 28 2019 Carl George <carl@george.computer> - 1.0.0-3
+- Port from Fedora to IUS
+
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
